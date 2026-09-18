@@ -200,6 +200,13 @@ class RegressionTests(unittest.TestCase):
         legacy = economy.parse_trade_destinations_response(["TDEST|马赛|Domestic|64,26|1"])
         self.assertIsNone(legacy[0].estimated_turns)
 
+    def test_policy_and_purchase_errors_render_expected_lua_messages(self):
+        purchase_lua = cities.build_purchase_item(65536, "UNIT", "UNIT_BUILDER")
+        self.assertIn("action='move'", purchase_lua)
+        policy_lua = governance.build_set_policies({0: "POLICY_AGOGE"})
+        self.assertIn("ERR:CANNOT_SLOT|POLICY_AGOGE", policy_lua)
+        self.assertIn("ERR:SLOT_MISMATCH|POLICY_AGOGE", policy_lua)
+
     def test_option_menus_include_keep_choices_and_precise_todo_hints(self):
         from civ6_cli.repl import _normalize_option_lines, _todo_hint
         gov = _normalize_option_lines("可用政体", ["GOV|GOVERNMENT_CHIEFDOM|0|CURRENT|酋邦||"])
