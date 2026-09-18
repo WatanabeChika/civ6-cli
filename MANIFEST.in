@@ -1,0 +1,4 @@
+include COMMAND_MANUAL.md
+include LICENSE
+include THIRD_PARTY_NOTICES.md
+recursive-include scripts *.py *.ps1

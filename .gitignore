@@ -1,0 +1,39 @@
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Environments and local dependencies
+.venv/
+venv/
+env/
+.local-test-deps/
+
+# Packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+*.egg
+*.whl
+
+# Coverage and test output
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+
+# Local visual verification
+.terminal-screenshots/
+visual-samples/
+
+# Editors and operating systems
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+Desktop.ini
