@@ -126,6 +126,12 @@ def build_set_policies(assignments: dict[int, str]) -> str:
         if policy_type.upper() == "NONE":
             # Explicit clear — add to clearList but skip addList/pre-checks
             continue
+        cannot_slot_error = _bail_lua(
+            f'"ERR:CANNOT_SLOT|{policy_type} (" .. pType_{slot_idx} .. ") rejected for slot {slot_idx} (" .. sName_{slot_idx} .. ")"'
+        )
+        slot_mismatch_error = _bail_lua(
+            f'"ERR:SLOT_MISMATCH|{policy_type} (" .. pType .. ") cannot go in slot {slot_idx} (" .. sName .. ")"'
+        )
 
         pre_checks.append(
             f'local pe_{slot_idx} = GameInfo.Policies["{policy_type}"]; '
@@ -139,7 +145,7 @@ def build_set_policies(assignments: dict[int, str]) -> str:
             f'local pType_{slot_idx} = pe_{slot_idx}.GovernmentSlotType or "unknown"; '
             f"local st_{slot_idx} = pCulture:GetSlotType({slot_idx}); "
             f'local sName_{slot_idx} = slotNames[st_{slot_idx}] or ("type_" .. st_{slot_idx}); '
-            f"{_bail_lua(f''' "ERR:CANNOT_SLOT|{policy_type} (" .. pType_{slot_idx} .. ") rejected for slot {slot_idx} (" .. sName_{slot_idx} .. ")" ''')} end; "
+            f"{cannot_slot_error} end; "
             # Belt-and-suspenders type string check, now covers Economic/Military/Diplomatic (sType < 3)
             f"local sType_{slot_idx} = pCulture:GetSlotType({slot_idx}); "
             f"local pSlot_{slot_idx} = slotTypeMap[pe_{slot_idx}.GovernmentSlotType] or -1; "
@@ -147,7 +153,7 @@ def build_set_policies(assignments: dict[int, str]) -> str:
             f"  and pe_{slot_idx}.GovernmentSlotType ~= 'SLOT_WILDCARD' then "
             f'local sName = slotNames[sType_{slot_idx}] or "unknown"; '
             f'local pType = pe_{slot_idx}.GovernmentSlotType or "unknown"; '
-            f"{_bail_lua(f''' "ERR:SLOT_MISMATCH|{policy_type} (" .. pType .. ") cannot go in slot {slot_idx} (" .. sName .. ")" ''')} end"
+            f"{slot_mismatch_error} end"
         )
         add_entries.append(f"addList[{slot_idx}] = pe_{slot_idx}.Hash")
 

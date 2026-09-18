@@ -649,6 +649,9 @@ def build_purchase_item(
             f"tParams[CityCommandTypes.PARAM_X] = {target_x}\n"
             f"tParams[CityCommandTypes.PARAM_Y] = {target_y}"
         )
+    stacking_conflict = _bail_lua(
+        f'"ERR:STACKING_CONFLICT|Cannot purchase {item_name} — " .. uDef.UnitType .. " (unit_id=" .. uid .. ") is on the city tile. Move it with unit_action(unit_id=" .. uid .. ", action=\'move\', target_x, target_y) first, then retry the purchase."'
+    )
     return f"""
 {_lua_get_city(city_id)}
 local item = GameInfo.{table_name}["{item_name}"]
@@ -670,7 +673,7 @@ if "{itype}" == "UNIT" then
                 local uDef = GameInfo.Units[u:GetType()]
                 if uDef and uDef.FormationClass == targetClass then
                     local uid = u:GetID() + u:GetOwner() * 65536
-                    {_bail_lua(f'"ERR:STACKING_CONFLICT|Cannot purchase {item_name} — " .. uDef.UnitType .. " (unit_id=" .. uid .. ") is on the city tile. Move it with unit_action(unit_id=" .. uid .. ", action=\'move\', target_x, target_y) first, then retry the purchase."')}
+                    {stacking_conflict}
                 end
             end
         end
